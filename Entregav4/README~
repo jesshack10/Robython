@@ -1,0 +1,19 @@
+1)En esta entrega se define un nuevo modelo de variables.
+
+	*Distribución de variables GLOBALES.
+		NUM:  1000 - 1499
+		TEXT: 1500 - 1724
+		BOOL: 1725 - 1999
+	*Distribución de variables LOCALES.
+		NUM:  2000 - 2499
+		TEXT: 2500 - 2724
+		BOOL: 2725 - 2999
+
+2)Los diagramas de sintaxis cambiaron en los siguientes puntos:
+	*Las variables globales serán declaradas antes de las funciones.
+	*Se agregaron los operadores '&&' y '||' para operaciones lógicas.
+	*Se cambió la posición de los tokens 'true' y 'false'.
+	*Posibilidad de agregar variables locales a una función	
+	
+	EL CUBO SEMÁNTICO DEBE AMPLIARSE PARA AGREGAR LOS OTROS DOS OPERADORES && Y ||
+

@@ -1,0 +1,37 @@
+start programa1 :
+
+var text var1,var2,var3;
+var bool b1,b2,b3;
+var num v1,v2,v3;
+
+function myFunc(bool myBoolVar; text myText; num myNum;){var text id; var bool t;}
+{
+	myId=10;
+	robot.getTemperature;
+	robot.getDistance;
+	robot.getRightLight;
+}
+function myFunc2(bool myBoolVar;){var text myID;}
+{
+	myId=10;
+	robot.getTemperature;
+	robot.getDistance;
+	robot.getRightLight;
+}
+{
+	if(v1<v2){
+	}
+	if((v2&&v3)||(v2||v1)){
+	}
+
+	for(i=0; i<5;i=i+10)
+	{
+		robot.buzzer(10.3,DO+);
+		robot.rgb(324,32.0,235.10);
+	}
+
+	while(miVariable != 0)
+	{ print(myText+1);
+	  print("Hola ya casi acabo el programa");	
+	}
+} 
