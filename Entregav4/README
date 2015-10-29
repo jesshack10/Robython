@@ -20,6 +20,7 @@
 3)SE TOMARON EN CUENTA DOS IMPORTANTES CONSIDERACIONES EN LA DEFINICIÓN DE VARIABLES Y FUNCIONES: 
 	*Las funciones no pueden llamarse igual dentro del programa, aún y cuando su listado de parámetros 
 	y variables sean distintas. 
+	*No pueden existir funciones que se llamen igual que el nombre del programa principal. 
 	*Las variables globales y locales (a una función) no pueden llamarse igual aún cuando sean de distinto tipo. 
 		Ejemplo: 
 			- CASO INCORRECTO 
@@ -28,5 +29,4 @@
 
 4)MODIFICACIONES FALTANTES: 
 	*Guardar los parámetros asociados a la función.
-	*No permitir que dos o más funciones se llamen igual.
 			
