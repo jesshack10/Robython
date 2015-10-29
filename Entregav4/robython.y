@@ -1,3 +1,7 @@
+// --------------------REFERENCIAS ---------------------------
+//http://www.cplusplus.com/reference/list/list/
+//http://www.cplusplus.com/reference/vector/vector/
+// ----------------------------------------------------------
 %{
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,6 +25,7 @@ extern char* yytext;
 vector<Variable> tabVars; 
 
 string nameID; //Guarda el nombre de variable encontrado
+string nameFunct; //Guarda el nombre de funcion encontrada 
 
 //Valores scope variables globales. Empieza en 1000 hasta 1999
 int contGlobalNum = 1000; //Solo se podrán declarar 500 globales Num 
@@ -42,6 +47,8 @@ bool error=false;
 
 //Lista para ayudar a guardar las variables de cada función o globales
 list<Variable> listVariables;
+ 
+//Estructura para contener el nombre de función y su tabla de variables asociada. 
 struct DirObject{
 	string id;
 	list<Variable> listaVar;
@@ -59,19 +66,45 @@ int SemanticCube[3][3][10] = { {{0,0,0,0,0,2,2,2,2,0},{-1,-1,-1,-1,-1,-1,-1,-1,-
 //Aumenta el contador dependiendo del tipo de variables encontradas
 void addCounterOfKeyType(bool scope)
 {
-	if(scope)	
+	if(scope)
 	{
 		if(bnum && (contGlobalNum<1500)) var.setKey(contGlobalNum++);
 		else if(btext && (contGlobalText<1725)) var.setKey(contGlobalText++);
 		else if(bbool && (contGlobalNum<2000)) var.setKey(contGlobalBool++);
 		else {cout<<"¡Muchas variables declaradas!"<<endl; error=true;}
 	}else{
-
 		if(bnum && (contLocalNum<2500)) var.setKey(contLocalNum++);
 		else if(btext && (contLocalText<2725)) var.setKey(contLocalText++);
 		else if(bbool && (contLocalNum<3000)) var.setKey(contLocalBool++);
 		else {cout<<"¡Muchas variables declaradas!"<<endl; error=true;}
 	}
+}
+
+//Funcion que valida que no exista ya el nombre de la funcion dentro del Directorio Procedimientos.
+bool validateInsertFunc(string name_fun)
+{
+	bool insertarFunc = true; 
+	{
+		for(int c=0; c<DirProc.size(); c++)
+		{
+			if (name_fun == DirProc[c].id)
+				insertarFunc = false; 
+		}
+	}
+	return insertarFunc; 
+}
+
+
+//Funcion que valida que no exista el nombre de la variable dentro de la misma funcion. 
+bool validateInsertVar(string name_var)
+{	
+	bool poderInsertar = true; 
+	for (list<Variable>:: iterator it= listVariables.begin();it!=listVariables.end();it++)
+	{
+		if (name_var == (*it).getId())	
+			poderInsertar = false; 
+	}
+	return poderInsertar; 
 }
 
 void yyerror (const char *s);
@@ -143,44 +176,58 @@ void yyerror (const char *s);
 
 %%
 programa: 
-		START ID {globalOrLocal = true;}':' vars { DirObject myDirObject;
-													myDirObject.id = $2;
-													myDirObject.listaVar = listVariables;
-													DirProc.push_back(myDirObject);
-													listVariables.clear(); } functions bloque
-				 {	
-				 	//Imprimir resultados finales
-				 	cout<<"PROGRAM WORKS PROPERLY"<<endl;
-				 	for(int i=0; i<DirProc.size(); i++)
-				 	{
-				 		cout<<DirProc[i].id<<endl;
-
-				 		while(!DirProc[i].listaVar.empty())
-				 		{
-				 			cout<<"\t";
-				 			DirProc[i].listaVar.front().muestra();
-				 			DirProc[i].listaVar.pop_front();
-				 			cout<<endl;
-				 		}
-				 	}
-				 }
+		START ID {globalOrLocal = true;} ':' vars  
+											{DirObject myDirObject;
+											myDirObject.id = $2;
+											myDirObject.listaVar = listVariables;
+											DirProc.push_back(myDirObject);
+											listVariables.clear();} functions bloque
+				 {
+					//Imprimir resultados finales
+					cout<<"PROGRAM WORKS PROPERLY"<<endl;
+					for(int i=0; i<DirProc.size(); i++)
+					{
+						cout<<DirProc[i].id<<endl;
+						while(!DirProc[i].listaVar.empty())
+						{
+							cout<<"\t";
+							DirProc[i].listaVar.front().muestra();
+							DirProc[i].listaVar.pop_front();
+							cout<<endl;
+						}
+					}
+				}
 		; 
 
 functions: 
-		FUNCTION ID {globalOrLocal = false;} '(' par_func ')' vars_func{DirObject myDirObject;
-																		myDirObject.id = $2;
-																		myDirObject.listaVar = listVariables;
-																		DirProc.push_back(myDirObject);
-																		listVariables.clear();
-																		contLocalNum = 2000;	
-																		contLocalText = 2500;
-																		contLocalBool = 2725; 
+		FUNCTION ID {globalOrLocal = false;} '(' par_func ')' vars_func {
+																			nameFunct=$2;
+																			bool insertF = true;
+																			insertF=validateInsertFunc(nameFunct);
+																			if (insertF==true)
+																			{
+																				DirObject myDirObject;
+																				myDirObject.id = $2;
+																				myDirObject.listaVar = listVariables;
+																				DirProc.push_back(myDirObject);
+																				listVariables.clear();
+																				contLocalNum = 2000;
+																				contLocalText = 2500;
+																				contLocalBool = 2725;
+																			}
+																			else 
+																			{
+																				listVariables.clear(); 
+																				cout << "ERROR FATAL: NO PUEDEN EXISTIR DOS FUNCIONES CON EL MISMO NOMBRE" << endl; 
+																			}
 																		} bloque functions
 		|
 		;
-vars_func:
-		 '{' vars '}'
-		 ;
+
+vars_func: 
+		'{' vars '}'
+		;
+
 par_func: 
 		tipo ID{cout<<"Nom_Var:" <<$2<<endl; } PCOMA par_func
 		|
@@ -192,13 +239,34 @@ vars:
 		; 
  
 def_names: 
-		ID { 	var.setId($1);
-			 	addCounterOfKeyType(globalOrLocal);
-			 	listVariables.push_back(var); cout<<"push"<<endl;}
+		ID { 	//Llamada a funcion para verificar si el nombre de variable ya existe 
+				nameID = $1; 
+				bool insert=true; 
+				insert = validateInsertVar(nameID);
+				if (insert == true )
+				{
+					var.setId($1);
+			 		addCounterOfKeyType(true);
+			 		listVariables.push_back(var); cout<<"push"<<endl;
+			 	}
+			 	else 
+			 		cout << "ERROR FATAL: NO ES POSIBLE DECLARAR VARIABLES CON EL MISMO NOMBRE DENTRO DE UNA FUNCION" << endl; 
+		 	}
+			
 
-		| ID { var.setId($1);
-			   addCounterOfKeyType(globalOrLocal);
-			   listVariables.push_back(var); cout<<"push"<<endl;} ',' def_names
+		| ID {
+				nameID = $1; 
+				bool insert=true; 
+				insert = validateInsertVar(nameID);
+				if (insert == true)
+				{
+					var.setId($1);
+			   		addCounterOfKeyType(true);
+			   		listVariables.push_back(var); cout<<"push"<<endl;
+				}
+				else 
+					cout << "ERROR FATAL: NO ES POSIBLE DECLARAR VARIABLES CON EL MISMO NOMBRE DENTRO DE UNA FUNCION" << endl; 
+			} ',' def_names
 		;
 
 tipo: 
@@ -384,7 +452,6 @@ int main()
 	yyin = myfile;
 	do 
 	{
-		if(error) break; //Si encuentra un error detiene el parser
 		yyparse();		
 	} while (!feof(yyin)); 
 }
