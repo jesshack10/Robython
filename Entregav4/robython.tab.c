@@ -62,7 +62,7 @@
 
 
 /* Copy the first part of user declarations.  */
-#line 1 "robython.y" /* yacc.c:339  */
+#line 5 "robython.y" /* yacc.c:339  */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -86,6 +86,7 @@ extern char* yytext;
 vector<Variable> tabVars; 
 
 string nameID; //Guarda el nombre de variable encontrado
+string nameFunct; //Guarda el nombre de funcion encontrada 
 
 //Valores scope variables globales. Empieza en 1000 hasta 1999
 int contGlobalNum = 1000; //Solo se podrán declarar 500 globales Num 
@@ -97,6 +98,12 @@ int contLocalNum = 2000;
 int contLocalText = 2500;
 int contLocalBool = 2725; 
 
+//Valores de scope para parametros locales a funciones. Empiezan en 200 hasta 230. 
+//En cada funcion solo se permiten como maximo 10 parametros de tipo num, 10 de tipo text y 10 de tipo bool. 
+int contParNum=200;
+int contParText=210;
+int contParBool=220; 
+
 //Banderas para inserción de variables
 bool bnum=false;
 bool btext=false;
@@ -105,8 +112,16 @@ bool globalOrLocal;//Booleano para saber si estoy en global o local
 //Bandera de ERROR
 bool error=false;
 
+//Bandera de Error por Maximo Parametros 
+bool maxParError=false; 
+//Bandera de Error por Maximo Globales y bandera de error por maximo locales.
+bool maxGlobalError=false
+bool maxLocalError=false; 
+
 //Lista para ayudar a guardar las variables de cada función o globales
 list<Variable> listVariables;
+ 
+//Estructura para contener el nombre de función y su tabla de variables asociada. 
 struct DirObject{
 	string id;
 	list<Variable> listaVar;
@@ -117,31 +132,66 @@ vector<DirObject> DirProc;
 
 Variable var; //Objeto auxiliar para crear las variable encontradas
 
-int SemanticCube[3][3][10] = { {{0,0,0,0,0,2,2,2,2,0},{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}},
-					     				 {{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}, {-1,-1,-1,1,-1,2,2,2,2,1}, {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}},
-					      				 {{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},{-1,-1,-1,-1,-1,2,2,2,2,2}} };
+int SemanticCube[3][3][12] = { {{0,0,0,0,0,2,2,2,2,0,-1,-1},{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}},
+					     				 {{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}, {-1,-1,-1,1,-1,2,2,2,2,1,-1,-1}, {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}},
+					      				 {{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},{-1,-1,-1,-1,-1,2,2,2,2,2,2,2}} };
 
 //Aumenta el contador dependiendo del tipo de variables encontradas
+//true global, false local
 void addCounterOfKeyType(bool scope)
 {
-	if(scope)	
+	if(scope)
 	{
 		if(bnum && (contGlobalNum<1500)) var.setKey(contGlobalNum++);
 		else if(btext && (contGlobalText<1725)) var.setKey(contGlobalText++);
 		else if(bbool && (contGlobalNum<2000)) var.setKey(contGlobalBool++);
-		else {cout<<"¡Muchas variables declaradas!"<<endl; error=true;}
+		else {cout<<"¡Muchas variables declaradas!"<<endl; error=true; maxGlobalError=true;}
 	}else{
-
 		if(bnum && (contLocalNum<2500)) var.setKey(contLocalNum++);
 		else if(btext && (contLocalText<2725)) var.setKey(contLocalText++);
 		else if(bbool && (contLocalNum<3000)) var.setKey(contLocalBool++);
-		else {cout<<"¡Muchas variables declaradas!"<<endl; error=true;}
+		else {cout<<"¡Muchas variables declaradas!"<<endl; error=true;maxLocalError=true;}
 	}
+}
+
+void addCounterOfParameter()
+{
+	if (bnum && (contParNum<210))var.setKey(contParNum++);
+	else if(btext && (contParText<220))var.setKey(contParText++);
+	else if (bbool && (contParBool<230))var.setKey(contParBool++);
+	else {cout << "¡Muchos parámetros declarados!" << endl; error=true; maxParError=true;}
+}
+
+//Funcion que valida que no exista ya el nombre de la funcion dentro del Directorio Procedimientos.
+bool validateInsertFunc(string name_fun)
+{
+	bool insertarFunc = true; 
+	{
+		for(int c=0; c<DirProc.size(); c++)
+		{
+			if (name_fun == DirProc[c].id)
+				insertarFunc = false; 
+		}
+	}
+	return insertarFunc; 
+}
+
+
+//Funcion que valida que no exista el nombre de la variable dentro de la misma funcion. 
+bool validateInsertVar(string name_var)
+{	
+	bool poderInsertar = true; 
+	for (list<Variable>:: iterator it= listVariables.begin();it!=listVariables.end();it++)
+	{
+		if (name_var == (*it).getId())	
+			poderInsertar = false; 
+	}
+	return poderInsertar; 
 }
 
 void yyerror (const char *s);
 
-#line 145 "robython.tab.c" /* yacc.c:339  */
+#line 195 "robython.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -232,13 +282,13 @@ extern int yydebug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 80 "robython.y" /* yacc.c:355  */
+#line 134 "robython.y" /* yacc.c:355  */
 
 	float fval;
 	bool bval;
 	char *sval;
 
-#line 242 "robython.tab.c" /* yacc.c:355  */
+#line 292 "robython.tab.c" /* yacc.c:355  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
@@ -253,7 +303,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 257 "robython.tab.c" /* yacc.c:358  */
+#line 307 "robython.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -555,16 +605,16 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   146,   146,   146,   146,   170,   170,   170,   179,   182,
-     185,   185,   186,   190,   191,   195,   199,   199,   205,   206,
-     207,   211,   215,   216,   217,   218,   219,   220,   224,   228,
-     232,   233,   234,   235,   236,   240,   244,   245,   246,   250,
-     254,   255,   256,   260,   265,   266,   267,   271,   272,   277,
-     278,   279,   280,   284,   285,   286,   287,   291,   295,   296,
-     300,   304,   305,   309,   310,   314,   315,   316,   317,   318,
-     319,   320,   321,   322,   323,   324,   325,   329,   330,   331,
-     332,   333,   334,   335,   336,   337,   338,   339,   340,   341,
-     342,   346,   347,   351,   355,   359,   363,   364,   365,   366
+       0,   200,   200,   201,   200,   224,   224,   224,   247,   251,
+     255,   255,   271,   275,   276,   280,   298,   298,   317,   318,
+     319,   323,   327,   328,   329,   330,   331,   332,   336,   340,
+     344,   345,   346,   347,   348,   352,   356,   357,   358,   362,
+     366,   367,   368,   372,   377,   378,   379,   383,   384,   389,
+     390,   391,   392,   396,   397,   398,   399,   403,   407,   408,
+     412,   416,   417,   421,   422,   426,   427,   428,   429,   430,
+     431,   432,   433,   434,   435,   436,   437,   441,   442,   443,
+     444,   445,   446,   447,   448,   449,   450,   451,   452,   453,
+     454,   458,   459,   463,   467,   471,   475,   476,   477,   478
 };
 #endif
 
@@ -1470,104 +1520,158 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 146 "robython.y" /* yacc.c:1646  */
+#line 200 "robython.y" /* yacc.c:1646  */
     {globalOrLocal = true;}
-#line 1476 "robython.tab.c" /* yacc.c:1646  */
+#line 1526 "robython.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 146 "robython.y" /* yacc.c:1646  */
-    { DirObject myDirObject;
-													myDirObject.id = (yyvsp[-3].sval);
-													myDirObject.listaVar = listVariables;
-													DirProc.push_back(myDirObject);
-													listVariables.clear(); }
-#line 1486 "robython.tab.c" /* yacc.c:1646  */
+#line 201 "robython.y" /* yacc.c:1646  */
+    {DirObject myDirObject;
+							myDirObject.id = (yyvsp[-3].sval);
+							myDirObject.listaVar = listVariables;
+							DirProc.push_back(myDirObject);
+							listVariables.clear();}
+#line 1536 "robython.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 151 "robython.y" /* yacc.c:1646  */
-    {	
-				 	//Imprimir resultados finales
-				 	cout<<"PROGRAM WORKS PROPERLY"<<endl;
-				 	for(int i=0; i<DirProc.size(); i++)
-				 	{
-				 		cout<<DirProc[i].id<<endl;
-
-				 		while(!DirProc[i].listaVar.empty())
-				 		{
-				 			cout<<"\t";
-				 			DirProc[i].listaVar.front().muestra();
-				 			DirProc[i].listaVar.pop_front();
-				 			cout<<endl;
-				 		}
-				 	}
-				 }
-#line 1507 "robython.tab.c" /* yacc.c:1646  */
+#line 206 "robython.y" /* yacc.c:1646  */
+    {
+					//Imprimir resultados finales
+					cout<<"PROGRAM WORKS PROPERLY"<<endl;
+					for(int i=0; i<DirProc.size(); i++)
+					{
+						cout<<DirProc[i].id<<endl;
+						while(!DirProc[i].listaVar.empty())
+						{
+							cout<<"\t";
+							DirProc[i].listaVar.front().muestra();
+							DirProc[i].listaVar.pop_front();
+							cout<<endl;
+						}
+					}
+				}
+#line 1556 "robython.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 170 "robython.y" /* yacc.c:1646  */
+#line 224 "robython.y" /* yacc.c:1646  */
     {globalOrLocal = false;}
-#line 1513 "robython.tab.c" /* yacc.c:1646  */
+#line 1562 "robython.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 170 "robython.y" /* yacc.c:1646  */
-    {DirObject myDirObject;
-																		myDirObject.id = (yyvsp[-5].sval);
-																		myDirObject.listaVar = listVariables;
-																		DirProc.push_back(myDirObject);
-																		listVariables.clear();
-																		contLocalNum = 2000;	
-																		contLocalText = 2500;
-																		contLocalBool = 2725; 
-																		}
-#line 1527 "robython.tab.c" /* yacc.c:1646  */
+#line 224 "robython.y" /* yacc.c:1646  */
+    {
+																			nameFunct=(yyvsp[-5].sval);
+																			bool insertF = true;
+																			insertF=validateInsertFunc(nameFunct);
+																			if (insertF==true)
+																			{
+																				DirObject myDirObject;
+																				myDirObject.id = (yyvsp[-5].sval);
+																				myDirObject.listaVar = listVariables;
+																				DirProc.push_back(myDirObject);
+																				listVariables.clear();
+																			}																		else 
+																			{
+																				listVariables.clear(); 
+																				cout << "ERROR FATAL: NO PUEDEN EXISTIR DOS FUNCIONES CON EL MISMO NOMBRE" << endl; 
+																			}
+																				contLocalNum = 2000;
+																				contLocalText = 2500;
+																				contLocalBool = 2725;
+																				contParNum=200;
+																				contParText=210;
+																				contParBool=220;
+												}
+#line 1590 "robython.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 185 "robython.y" /* yacc.c:1646  */
-    {cout<<"Nom_Var:" <<(yyvsp[0].sval)<<endl; }
-#line 1533 "robython.tab.c" /* yacc.c:1646  */
+#line 255 "robython.y" /* yacc.c:1646  */
+    { 	//Llamada a funcion para verificar si el nombre de variable ya existe 
+			nameID = (yyvsp[0].sval); 
+			bool insert=true; 
+			insert = validateInsertVar(nameID);
+			if (insert == true )
+			{
+				var.setId((yyvsp[0].sval));
+		 		addCounterOfParameter();
+		 		if (maxParError==false)
+		 			listVariables.push_back(var); cout<<"push"<<endl;
+		 	}
+		 	else 
+		 	{	cout << "ERROR FATAL: NO ES POSIBLE DECLARAR VARIABLES CON EL MISMO NOMBRE DENTRO DE UNA FUNCION" << endl;
+		 		error=true;
+		 	}			 	 
+		 	}
+#line 1611 "robython.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 195 "robython.y" /* yacc.c:1646  */
-    { 	var.setId((yyvsp[0].sval));
-			 	addCounterOfKeyType(globalOrLocal);
-			 	listVariables.push_back(var); cout<<"push"<<endl;}
-#line 1541 "robython.tab.c" /* yacc.c:1646  */
+#line 280 "robython.y" /* yacc.c:1646  */
+    { 	//Llamada a funcion para verificar si el nombre de variable ya existe 
+				nameID = (yyvsp[0].sval); 
+				bool insert=true; 
+				insert = validateInsertVar(nameID);
+				if (insert == true )
+				{
+					var.setId((yyvsp[0].sval));
+			 		addCounterOfKeyType(globalOrLocal);
+			 		if (maxGlobalError==false && maxLocalError==false)
+			 			listVariables.push_back(var), cout<<"push"<<endl;
+			 	}
+			 	else 
+			 		{	cout << "ERROR FATAL: NO ES POSIBLE DECLARAR VARIABLES CON EL MISMO NOMBRE DENTRO DE UNA FUNCION" << endl;
+			 			error=true;
+			 		}
+		 	}
+#line 1632 "robython.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 199 "robython.y" /* yacc.c:1646  */
-    { var.setId((yyvsp[0].sval));
-			   addCounterOfKeyType(globalOrLocal);
-			   listVariables.push_back(var); cout<<"push"<<endl;}
-#line 1549 "robython.tab.c" /* yacc.c:1646  */
+#line 298 "robython.y" /* yacc.c:1646  */
+    {
+				nameID = (yyvsp[0].sval); 
+				bool insert=true; 
+				insert = validateInsertVar(nameID);
+				if (insert == true)
+				{
+					var.setId((yyvsp[0].sval));
+			   		addCounterOfKeyType(globalOrLocal);
+			   		if (maxGlobalError==false && maxLocalError==false)
+			   			listVariables.push_back(var), cout<<"push"<<endl;
+				}
+				else 
+					{	cout << "ERROR FATAL: NO ES POSIBLE DECLARAR VARIABLES CON EL MISMO NOMBRE DENTRO DE UNA FUNCION" << endl;
+			 			error=true;
+			 		}		
+			}
+#line 1653 "robython.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 205 "robython.y" /* yacc.c:1646  */
+#line 317 "robython.y" /* yacc.c:1646  */
     {btext = true; bnum = false; bbool = false;}
-#line 1555 "robython.tab.c" /* yacc.c:1646  */
+#line 1659 "robython.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 206 "robython.y" /* yacc.c:1646  */
+#line 318 "robython.y" /* yacc.c:1646  */
     {bnum = true; btext = false; bbool = false;}
-#line 1561 "robython.tab.c" /* yacc.c:1646  */
+#line 1665 "robython.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 207 "robython.y" /* yacc.c:1646  */
+#line 319 "robython.y" /* yacc.c:1646  */
     {bbool = true; bnum = false; btext = false;}
-#line 1567 "robython.tab.c" /* yacc.c:1646  */
+#line 1671 "robython.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1571 "robython.tab.c" /* yacc.c:1646  */
+#line 1675 "robython.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1795,7 +1899,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 369 "robython.y" /* yacc.c:1906  */
+#line 481 "robython.y" /* yacc.c:1906  */
 
 
 void yyerror (const char *s)
@@ -1805,7 +1909,7 @@ void yyerror (const char *s)
 
 int main()
 {
-	FILE *myfile = fopen("prueba", "r");
+	FILE *myfile = fopen("pruebaE", "r");
 	if (!myfile)
 	{
 		printf("No se puede abrir el archivo\n");
@@ -1814,7 +1918,8 @@ int main()
 	yyin = myfile;
 	do 
 	{
-		if(error) break; //Si encuentra un error detiene el parser
-		yyparse();		
+		yyparse();
+
 	} while (!feof(yyin)); 
+	cout<<"Error:"<<error<<endl;
 }
