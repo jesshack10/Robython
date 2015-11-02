@@ -27,6 +27,10 @@
 			var num var1, var2; 
 			var bool var2, var2; 
 
-4)MODIFICACIONES FALTANTES: 
-	*Guardar los parámetros asociados a la función.
+4)Los parámetros de la función tienen números de ID que empiezan desde el número 200
+		*Distribución de parámetros de funciones, solo se pueden agregar 
+		10 funciones de cada tipo
+			NUM:	200-209
+			TEXT:	210-219
+			BOOL:	220-229
 			
