@@ -1,0 +1,7 @@
+start myTemp:
+
+{
+	
+robot.getTemperature;
+	robot.buzzer(1000,DO+);
+}

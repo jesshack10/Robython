@@ -1,0 +1,21 @@
+start myLEDS:
+
+{
+	robot.turnOnLED(1);
+	robot.buzzer(1000,DO+);
+robot.turnOnLED(2);
+	robot.buzzer(1000,RE+);
+robot.turnOnLED(3);
+	robot.buzzer(1000,MI+);
+robot.turnOnLED(4);
+	robot.buzzer(1000,FA+);
+robot.turnOffLED(1);
+	robot.buzzer(1000,DO);
+robot.turnOffLED(2);
+	robot.buzzer(1000,RE);
+robot.turnOffLED(3);
+	robot.buzzer(1000,MI);
+robot.turnOffLED(4);
+	robot.buzzer(1000,FA);
+
+}

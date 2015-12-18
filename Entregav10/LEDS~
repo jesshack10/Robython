@@ -1,0 +1,39 @@
+start myLEDS:
+var num i;
+
+function LEDS(){var num j;}
+{
+	j=4;
+	for(i=0; i<j; i=i+1)
+	{
+	   if(i==1){
+		robot.turnOnLED(1);	
+		robot.buzzer(1000,DO);}		
+	   if(i==2){
+		robot.turnOnLED(2);	
+		robot.buzzer(1000,RE);}
+	if(i==3){
+		robot.turnOnLED(3);	
+		robot.buzzer(1000,MI);}
+	if(i==4){
+		robot.turnOnLED(4);	
+		robot.buzzer(1000,FA);}
+	 if(i==5){
+		robot.turnOffLED(1);	
+		robot.buzzer(1000,DO+);}		
+	   if(i==6){
+		robot.turnOffLED(2);	
+		robot.buzzer(1000,RE+);}
+	if(i==7){
+		robot.turnOffLED(3);	
+		robot.buzzer(1000,MI+);}
+	if(i==8){
+		robot.turnOffLED(4);	
+		robot.buzzer(1000,FA+);}
+		print(i);
+	}
+}
+{
+	LEDS();
+	robot.buzzer(1000,DO+);
+}

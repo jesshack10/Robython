@@ -1,0 +1,17 @@
+start myLEDS:
+var num i;
+
+function LEDS(){var num j;}
+{
+	j=4;
+	for(i=0; i<j; i=i+1)
+	{
+		robot.turnOnLED(1);
+		print(i);
+	}
+}
+{
+	LEDS();
+	print(i*4);
+	robot.buzzer(1000,DO+);
+}

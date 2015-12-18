@@ -1,0 +1,93 @@
+#include "Robotec.h"
+
+Robotec robot;
+float distance,temp, lightR, lightL;
+void setup()
+{
+  Serial.begin(9600);
+  pinMode(2, OUTPUT);
+  pinMode(4, OUTPUT);
+  pinMode(6, OUTPUT);
+  pinMode(7, OUTPUT);
+  pinMode(8, OUTPUT);
+  pinMode(9, OUTPUT);
+  pinMode(10, OUTPUT);
+  pinMode(11, OUTPUT);
+  pinMode(12, OUTPUT);
+  pinMode(13, OUTPUT);
+  robot.MoveRoboTime(0,0,0);
+}
+String var1,var2,var3;
+
+boolean b1,b2,b3;
+
+float v1,v2,v3,i;
+
+void myFunc( boolean myBoolVar , String myText , float myNum){String id;
+
+boolean t;
+v1=59;
+myText="HolaDesdeFunción";
+
+temp = robot.GetTemp();
+   Serial.print("Temperatura: "); 
+  Serial.println(temp);
+
+distance=robot.GetDistance();
+   Serial.print("Distancia: "); 
+  Serial.println(distance);
+
+lightR=robot.LightSensorRight();
+   Serial.print("Luz Derecha: "); 
+  Serial.println(lightR);
+  robot.TurnOnLED(4);
+
+}
+
+void myFunc2( boolean myBoolVar){
+float myID;
+myID=10;
+
+temp = robot.GetTemp();
+   Serial.print("Temperatura: "); 
+  Serial.println(temp);
+
+distance=robot.GetDistance();
+   Serial.print("Distancia: "); 
+  Serial.println(distance);
+
+lightR=robot.LightSensorRight();
+   Serial.print("Luz Derecha: "); 
+  Serial.println(lightR);
+
+}
+
+void myFunc3(){String joan ; var1=joan;
+
+}
+
+void loop()
+{
+  Serial.println(v3%1);
+  Serial.println(var1 ) ;
+v1=3+2*5-3*((5-2)*2)/(5%3);
+v2=4;
+myFunc2 ( b1 ) ; myFunc ( b3 , var2 , v1 ) ; myFunc3 ( ) ; myFunc3 ( ) ; for(i=0;i<5; i=i+10){
+  robot.SoundOn(10.3,DOP);
+  robot.ColorRGB(324,32.0,235.10);
+
+}
+  Serial.println(v2*v1);
+  if(v2-v1>v2+v2)
+{
+
+}
+  while(v1!=0)
+{
+  Serial.println((int)v3%1);
+  Serial.println(v1+v2*(v3*i));
+  Serial.println("Hola ya casi acabo el programa" ) ;
+
+}
+
+}

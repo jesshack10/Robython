@@ -1,0 +1,46 @@
+start programa:
+function robython(){var num i;}
+{
+	for(i=1; i<400+1; i=i+1)
+	{
+		if(i==100)
+		{
+			robot.turnOnLED(1);
+			robot.turnOffLED(2);
+			robot.turnOffLED(3);
+			robot.turnOffLED(4);
+			robot.buzzer(100,LA);
+			print(i);
+		}
+		if(i==200)
+		{
+			robot.turnOnLED(2);
+			robot.turnOffLED(3);
+			robot.turnOffLED(1);
+			robot.turnOffLED(4);
+			robot.buzzer(100,LA);
+			print(i);
+		}
+		if(i==300)
+		{
+			robot.turnOnLED(3);
+			robot.turnOffLED(2);
+			robot.turnOffLED(1);
+			robot.turnOffLED(4);
+			robot.buzzer(100,LA);
+			print(i);
+		}
+		if(i==400)
+		{
+			robot.turnOnLED(4);
+			robot.turnOffLED(1);
+			robot.turnOffLED(2);
+			robot.turnOnLED(3);
+			robot.buzzer(100,LA);
+			print(i);
+		}
+	}
+}
+{
+	robython();
+}

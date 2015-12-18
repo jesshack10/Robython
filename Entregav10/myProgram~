@@ -1,0 +1,15 @@
+start myProgram:
+var num i;
+
+function myLEDs(){var num j;}
+{
+	j=4
+	for(i=0; i<j;i=i+1)
+	{	
+		robot.turnOnLED(i);
+		robot.Buzzer(1000,DOP);
+	}	
+}
+{
+	myLEDs();
+}

@@ -1,0 +1,40 @@
+start MusicaMartinillo:
+{
+	robot.buzzer(1000,DO);
+	robot.buzzer(1000,RE);
+	robot.buzzer(1000,MI);
+	robot.buzzer(500,DO);
+
+	robot.buzzer(1000,DO);
+	robot.buzzer(1000,RE);
+	robot.buzzer(1000,MI);
+	robot.buzzer(500,DO);
+	
+
+	robot.buzzer(500,MI);
+	robot.buzzer(1000,FA);
+	robot.buzzer(1000,SOL);
+	
+	robot.buzzer(500,MI);
+	robot.buzzer(1000,FA);
+	robot.buzzer(1000,SOL);
+
+	robot.buzzer(500,SOL);
+	robot.buzzer(500,LA+);
+	robot.buzzer(1000,SOL);
+	robot.buzzer(500,FA);
+	robot.buzzer(500,MI);
+	robot.buzzer(1000,DO);
+	
+	robot.buzzer(500,SOL);
+	robot.buzzer(500,LA+);
+	robot.buzzer(1000,SOL);
+	robot.buzzer(500,FA);
+	robot.buzzer(500,MI);
+	robot.buzzer(1000,DO);
+	
+	robot.buzzer(1000,RE);
+	robot.buzzer(1000,SI+);
+	robot.buzzer(1000,DO+);
+	robot.buzzer(1000,DO+);
+}

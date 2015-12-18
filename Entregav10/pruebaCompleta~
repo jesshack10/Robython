@@ -1,0 +1,56 @@
+start progJesus :
+
+var text var1,var2,var3;
+var bool b1,b2,b3;
+var num v1,v2,v3,i;
+
+function myFunc(bool myBoolVar; text myText; num myNum;){var text id; var bool t;}
+{
+	v1=59;
+	myText="HolaDesdeFunción";
+	robot.getTemperature;
+	robot.getDistance;
+	robot.getRightLight;
+	robot.turnOnLED(4);
+}
+function myFunc2(bool myBoolVar;){var num myID; }
+{
+	myID =10;
+	robot.getTemperature;
+	robot.getDistance;
+	robot.getRightLight;
+}
+
+function myFunc3(){var text joan;}
+{
+	var1=joan; 
+}
+{
+	print (v3%1);
+	print(var1);
+	v1 = 3+2*5-3*((5-2)*2)/(5%3);
+	v2=4;
+	myFunc2(b1;); 
+	myFunc(b3;var2;v1;);
+	myFunc3();
+	myFunc3();
+
+	for(i=0;i<5;i=i+10)
+	{
+		robot.buzzer(10.3,DO+);
+		robot.rgb(324,32.0,235.10);
+	}
+	print(v2*v1);
+	
+	if(v2-v1>v2+v2)
+	{
+	}else
+	{
+	}
+	while(v1 != 0)
+	{ 	
+		print (v3%1);
+		print (v1+v2*(v3*i));
+	  	print("Hola ya casi acabo el programa");	
+	}
+} 

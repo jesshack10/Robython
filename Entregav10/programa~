@@ -1,0 +1,21 @@
+start miFibonacci:
+var num i,n,result;
+
+function myFibonacci(){var num ant1; var num ant2;var num aux;}
+{
+	ant1=0;
+	ant2=1;
+	
+	for(i=2; i<n+1; i=i+1 )
+	{
+	  aux=ant1+ant2;
+	  ant2=ant1;
+	  ant1=aux;
+	}	
+	result=aux;
+}
+{
+	n=4;
+	myFibonacci();
+	print(result);
+}

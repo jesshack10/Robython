@@ -1,0 +1,46 @@
+'use strict';
+goog.require('Blockly.Blocks');
+/*
+*This creates a RGB block for Robython
+*/
+Blockly.Blocks['robython_rgb'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("ROBYTHON");
+    this.appendValueInput("R")
+        .setCheck("Number")
+        .appendField("R");
+    this.appendValueInput("G")
+        .setCheck("Number")
+        .appendField("G");
+    this.appendValueInput("B")
+        .setCheck("Number")
+        .appendField("B");
+    this.setInputsInline(true);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(120);
+    this.setTooltip('');
+    this.setHelpUrl('http://www.example.com/');
+  }
+};
+/*
+*This blocks allows us to manipulate the Buzzer 
+*of the Robot
+*/
+
+Blockly.Blocks['robython_buzzer'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("ROBYTHON BUZZER");
+    this.appendValueInput("time")
+        .setCheck("Number")
+        .appendField(new Blockly.FieldDropdown([["DO", "C"], ["RE", "D"], ["MI", "E"], ["FA", "F"], ["SOL", "G"], ["LA", "A"], ["SI", "B"], ["DO+", "C+"]]), "Notes");
+    this.setInputsInline(true);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setColour(210);
+    this.setTooltip('');
+    this.setHelpUrl('http://www.example.com/');
+  }
+};

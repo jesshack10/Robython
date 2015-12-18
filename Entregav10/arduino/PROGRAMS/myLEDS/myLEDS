@@ -1,0 +1,18 @@
+mainStart
+startBlock  roboOnLED 1 
+ roboBuzzer 1000 DOP 
+ roboOnLED 2 
+ roboBuzzer 1000 REP 
+ roboOnLED 3 
+ roboBuzzer 1000 MIP 
+ roboOnLED 4 
+ roboBuzzer 1000 FAP 
+ roboOffLED 1 
+ roboBuzzer 1000 DO 
+ roboOffLED 2 
+ roboBuzzer 1000 RE 
+ roboOffLED 3 
+ roboBuzzer 1000 MI 
+ roboOffLED 4 
+ roboBuzzer 1000 FA 
+endBlock mainEnd
